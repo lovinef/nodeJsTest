@@ -1,9 +1,9 @@
 var sql = require('mssql');
 var config = {
-    user: "sa",
-    password: "Qwer!@#$",
-    database: "APT_TAX",
-    server: "192.168.10.200",
+    user: process.env.ms_user,
+    password: process.env.ms_password,
+    database: process.env.ms_database,
+    server: process.env.ms_server,
     stream: true
 };
 

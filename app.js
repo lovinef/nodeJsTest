@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var session = require('express-session');
@@ -57,7 +59,7 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.listen(4000, function(){
+app.listen(process.env.port, function(){
   console.log("server on");
 });
 
