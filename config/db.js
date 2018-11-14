@@ -1,5 +1,5 @@
-var sql = require('mssql');
-var config = {
+const sql = require('mssql');
+const config = {
     user: process.env.ms_user,
     password: process.env.ms_password,
     database: process.env.ms_database,
@@ -7,7 +7,7 @@ var config = {
     stream: true
 };
 
-var conn = sql.connect(config, function(err){
+const conn = sql.connect(config, function(err){
     if(err){
         console.log(err);
     }else{

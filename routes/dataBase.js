@@ -1,9 +1,10 @@
-var express = require('express');
-var sql = require('../config/db');
-var router = express.Router();
+const express = require('express');
+const sql = require('../config/db');
+const logger = require('../config/logger');
+const router = express.Router();
 
 // Interceptor, if no session do redirect
-router.use(function(req, res, next) {
+router.use((req, res, next) => {
     if(req.session != undefined && req.session.usr_id != undefined){
         next();
     }else{
@@ -11,35 +12,43 @@ router.use(function(req, res, next) {
     }
 });
 
-router.post('/getAptCodes', function(req, res) {
-    var jsonObj = new Object();
+router.post('/getAptCodes', (req, res) => {
     var jsonArray = new Array();
+    var jsonObj = new Object();
 
-    // Create new db connection
     var conn = new sql.Request();
     conn.stream = true;
 
     // set query
-    var query = "SELECT TOP 5 APT_CODE, USR_ID FROM COUSRIF01 WHERE APT_CODE = @param";
+    var query = "SELECT TOP 5 APT_CODE, USR_ID FROM COUSRIF01 WHERE APT_CODE IN(@param, @param1)";
 
     // query param set
     conn.input('param', '00002'); // param set
+    conn.input('param1', '00085'); // param set
 
-    // excute query
+    // execute query
     conn.query(query);
-    conn.on('row', function(row) {
+
+    conn.on('row', (row) => {
         jsonArray.push({
             apt_code : row.APT_CODE,
             usr_id : row.USR_ID
         });
     });
-    conn.on('error', function(err) {
+
+    conn.on('error', (err) => {
+        jsonObj.err = true;
+        jsonObj.errMsg = err;
         console.log(err);
+
+        logger.err(err.message);
     });
-    conn.on('done', function(returnValue) {
-        jsonObj.list = jsonArray;
+
+    conn.on('done', (returnValue) => {
+        if(jsonObj.err != true) jsonObj.list = jsonArray;
         res.json(jsonObj);
     });
 });
+
 
 module.exports = router;

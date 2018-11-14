@@ -1,19 +1,18 @@
-var sql = require('mongoose');
+const MongoClient = require('mongodb').MongoClient;
+const Server = require('mongodb').Server;
 
-var config = {
-    user: "sa",
-    password: "Qwer!@#$",
-    database: "APT_TAX",
-    server: "197.0.0.1",
-    stream: true
-};
+// create mongoClient
+const mongoClient = new MongoClient(
+                    new Server(process.env.mongoDB_ip, process.env.mongoDB_port, {'native_parser':true})
+                );
 
-var conn = sql.connect(config, function(err){
-    if(err){
-        console.log(err);
-    }else{
-        console.log('connection is established');
-    }
+// create new connection
+mongoClient.connect((err, client) => {
+    if(err) throw err;
+    console.log('mongo client has connected');
 });
 
-module.exports = sql;
+// set Tablespace
+const db = mongoClient.db('mongodb_tutorial');
+
+module.exports = db;

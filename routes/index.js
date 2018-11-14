@@ -2,7 +2,7 @@ var express = require('express');
 var fs = require('fs');
 var router = express.Router();
 
-router.get('/', function(req, res) {
+router.get('/', (req, res) => {
     if(req.session != undefined && req.session.usr_id != undefined){
         res.render('index', { title: req.session.usr_id});
     }else{
@@ -10,7 +10,7 @@ router.get('/', function(req, res) {
     }
 });
 
-router.post('/rest', function(req, res) {
+router.post('/rest', (req, res) => {
     req.accepts('application/json');
 
     var json = req.body;
@@ -25,7 +25,7 @@ router.post('/rest', function(req, res) {
     res.json(jsonObj);
 });
 
-router.get('/downloadFile', function(req, res) {
+router.get('/downloadFile', (req, res) => {
     var filePath = "C:/Users/user/Downloads/abcd.png"; // Or format the path using the `id` rest param
     var fileName = "abcd.png";
 

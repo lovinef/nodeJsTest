@@ -1,37 +1,47 @@
+// .env file Read
 require('dotenv').config();
 
-var createError = require('http-errors');
-var express = require('express');
-var session = require('express-session');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var loginRouter = require('./routes/login');
-var indexRouter = require('./routes/index');
-var dataBaseRouter = require('./routes/dataBase');
-
-var app = express();
+// Require setup
+const createError = require('http-errors');
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  logger('dev')
+  , express.json()
+  , express.urlencoded({ extended: false })
+  , express.static(path.join(__dirname, 'public'))
+  , cookieParser()
 
-app.use(session({
-  secret: '1@%24^%$3^*&98&^%$', // 쿠키에 저장할 connect.sid값을 암호화할 키값 입력
-  resave: true,                //세션 아이디를 접속할때마다 새롭게 발급하지 않음
-  saveUninitialized: true       //세션 아이디를 실제 사용하기전에는 발급하지 않음
-}));
+  // session setup
+  , session({
+    // genid: function(req){ // use UUIDs for session IDs
+    //   //return genuuid()
+    // },
+    secret: '1@%24^%$3^*&98&^%$', // 쿠키에 저장할 connect.sid값을 암호화할 키값 입력
+    resave: true,                 //세션 아이디를 접속할때마다 새롭게 발급하지 않음
+    saveUninitialized: true,      //세션 아이디를 실제 사용하기전에는 발급하지 않음
+    cookie: {
+      secure:false,        // https에서만 cookie를 사용여부 설정(HTTPS에서만 작당)
+      maxAge : 1000*60*60 // 만료 시간 설정 ms 단위
+      //expires : 1000 // 만료 날짜를 GMT 시간으로 설정(maxAge와 동시 등록시 마지막것 사용)
+    }    
+  })
+);
 
-app.use('/', indexRouter);
-app.use('/login', loginRouter);
-app.use('/data', dataBaseRouter);
+// Router Setting
+app.use('/'       , require('./routes/index'));
+app.use('/login'  , require('./routes/login'));
+app.use('/data'   , require('./routes/dataBase'));
+app.use('/mongo'  , require('./routes/mongo'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -58,9 +68,9 @@ app.use(function(err, req, res, next) {
   });
 });
 
-
-app.listen(process.env.port, function(){
-  console.log("server on");
+// Server Start Check
+app.listen(process.env.port, () =>{
+  console.log('server start');
 });
 
 module.exports = app;
